@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — Customs & Excise Tariff Book</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero hero-single-title">
+    <div class="hero-inner">
+      <div>
+        <h1 class="display">CUSTOMS &amp; EXCISE TARIFF BOOK</h1>
+        <p class="hero-subtitle">Create an account</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="auth-layout">
+    <section class="card auth-card">
+      <h2 class="section-title display">Register</h2>
+      <form id="register-form" class="auth-form">
+        <input type="text" name="fullName" placeholder="Full name" required />
+        <input type="email" name="email" placeholder="Email address" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button type="submit">Register</button>
+          <a href="login.html" class="link-button">Back to sign in</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <p id="auth-message" class="auth-message"></p>
+
+  <footer class="site-footer">
+    <a href="#" class="footer-link" data-action="contacts">Contacts</a>
+    <span class="footer-copy">&copy; 2026 Customs &amp; Excise Tariff Book · All rights reserved</span>
+    <a href="#" class="footer-link" data-action="about">About</a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>CUSTOMS & EXCISE TARIFF BOOK</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero hero-single-title">
+    <div class="hero-inner">
+      <div class="brand-lockup">
+        <div class="brand-mark" aria-hidden="true">🔒</div>
+        <div class="brand-text">
+          <div class="brand-title">TARIFF BOOK</div>
+          <div class="brand-subtitle">PAPA-MFERA . Customs &amp; Excise</div>
+        </div>
+      </div>
+    </div>
+    <div class="page-links">
+      <span id="user-welcome" class="user-welcome"></span>
+      <div class="page-actions">
+        <div class="menu-wrapper">
+          <details id="menu-details" class="menu-details">
+            <summary id="menu-toggle" class="menu-button" aria-expanded="false" aria-controls="account-menu" aria-label="Open menu">
+              <span class="hamburger-icon" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </summary>
+            <div id="account-menu" class="account-menu" role="menu" aria-label="Account menu">
+              <button type="button" class="menu-item menu-toggle-item theme-toggle-item" id="theme-toggle-button" data-action="theme-toggle" role="switch" aria-checked="false">
+                <span class="theme-toggle-label">Dark mode: Off</span>
+                <span class="theme-toggle-pill" aria-hidden="true"></span>
+              </button>
+              <button type="button" class="menu-item menu-toggle-item" data-action="duty-calculator">Duty calculator</button>
+              <button type="button" class="menu-item menu-toggle-item" id="admin-approval-button" data-action="admin-approval">Admin approval</button>
+              <button type="button" class="menu-item menu-toggle-item" id="registered-users-button" data-action="registered-users">Registered users</button>
+              <button type="button" class="menu-item menu-toggle-item" id="password-reset-button" data-action="password-reset-requests">Password reset requests</button>
+              <button type="button" id="change-password-button" class="menu-item menu-toggle-item">Change password</button>
+              <button type="button" id="logout-button" class="menu-item menu-toggle-item">Logout</button>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div id="page-modal" class="page-modal" hidden>
+      <div class="page-modal-content" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
+        <button type="button" id="close-modal" class="modal-close">×</button>
+        <h2 id="contact-modal-title" class="section-title display">Contact us</h2>
+        <div class="contact-modal-body">
+          <p class="contact-item">
+            <strong>Email:</strong>
+            <a href="mailto:christoskatchomoza@gmail.com">christoskatchomoza@gmail.com</a>
+          </p>
+          <p class="contact-item">
+            <strong>Phone:</strong>
+            <a href="tel:+265992593853">+265 992 593 853</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <section class="card" id="lookup-card">
+      <h2 class="section-title display">Tariff &amp; duty schedule lookup</h2>
+      <p class="lookup-hint">Search the First–Sixth Schedule tariff tables by HS code or description and view the corresponding duties, excise, VAT, AIT and cross-references.</p>
+      <div class="lookup-controls">
+        <div class="lookup-mode-toggle" role="group" aria-label="Search mode">
+          <button type="button" class="mode-toggle active" data-mode="hs" aria-pressed="true">HS code</button>
+          <button type="button" class="mode-toggle" data-mode="description" aria-pressed="false">Description</button>
+        </div>
+        <label class="lookup-schedule-picker" for="lookup-schedule-select">
+          <span>Schedule</span>
+          <select id="lookup-schedule-select"></select>
+        </label>
+      </div>
+      <details class="lookup-quick-access">
+        <summary class="quick-access-summary">Recent searches &amp; bookmarked HS codes</summary>
+        <div class="quick-access-panels">
+          <div class="quick-access-panel">
+            <div class="quick-access-header">
+              <h3>Recent searches</h3>
+              <button type="button" id="clear-recent-searches" class="text-button">Clear</button>
+            </div>
+            <div id="recent-searches-list" class="quick-access-list"></div>
+          </div>
+          <div class="quick-access-panel">
+            <div class="quick-access-header">
+              <h3>Bookmarked HS codes</h3>
+              <button type="button" id="clear-bookmarks" class="text-button">Clear</button>
+            </div>
+            <div id="bookmarked-codes-list" class="quick-access-list"></div>
+          </div>
+        </div>
+      </details>
+      <div class="search-box lookup-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="lookup-input" placeholder="e.g. 8703.23 or &quot;road tractor&quot;" autocomplete="off" />
+        <button type="button" id="lookup-search-button" class="lookup-search-button">Search</button>
+      </div>
+      <div id="lookup-results" class="lookup-results"></div>
+      <div id="lookup-detail" class="lookup-detail"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a href="#" class="footer-link" data-action="contacts">Contacts</a>
+    <span class="footer-copy">&copy; 2026 Customs &amp; Excise Tariff Book · All rights reserved</span>
+    <a href="#" class="footer-link" data-action="about">About</a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

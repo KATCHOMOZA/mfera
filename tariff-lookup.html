@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CUSTOMS & EXCISE TARIFF BOOK</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner hero-single-title">
+      <div>
+        <h1 class="display" id="title">CUSTOMS &amp; EXCISE TARIFF BOOK</h1>
+        <p class="hero-subtitle">Official customs and excise tariff reference for duty lookup and cross-references</p>
+      </div>
+    </div>
+    <div class="page-links">
+      <span id="user-welcome" class="user-welcome"></span>
+      <a class="page-link-center" href="index.html">Back to main tariff lookup</a>
+      <div class="page-actions">
+        <button type="button" id="change-password-button" class="logout-button change-password-button">Change password</button>
+        <button type="button" id="logout-button" class="logout-button">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="card" id="lookup-card">
+      <h2 class="section-title display">Tariff &amp; duty schedule lookup</h2>
+      <p class="lookup-hint">Search the actual First–Sixth Schedule tariff tables by HS code or description. Results cross-reference duty, excise, VAT, surcharge, export duty, dumping duty and carbon tax exposure for that line.</p>
+      <div class="lookup-controls">
+        <div class="lookup-mode-toggle" role="group" aria-label="Search mode">
+          <button type="button" class="mode-toggle active" data-mode="hs" aria-pressed="true">HS code</button>
+          <button type="button" class="mode-toggle" data-mode="description" aria-pressed="false">Description</button>
+        </div>
+        <label class="lookup-schedule-picker" for="lookup-schedule-select">
+          <span>Schedule</span>
+          <select id="lookup-schedule-select"></select>
+        </label>
+      </div>
+      <details class="lookup-quick-access">
+        <summary class="quick-access-summary">Recent searches &amp; bookmarked HS codes</summary>
+        <div class="quick-access-panels">
+          <div class="quick-access-panel">
+            <div class="quick-access-header">
+              <h3>Recent searches</h3>
+              <button type="button" id="clear-recent-searches" class="text-button">Clear</button>
+            </div>
+            <div id="recent-searches-list" class="quick-access-list"></div>
+          </div>
+          <div class="quick-access-panel">
+            <div class="quick-access-header">
+              <h3>Bookmarked HS codes</h3>
+              <button type="button" id="clear-bookmarks" class="text-button">Clear</button>
+            </div>
+            <div id="bookmarked-codes-list" class="quick-access-list"></div>
+          </div>
+        </div>
+      </details>
+      <div class="search-box lookup-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="lookup-input" placeholder="e.g. 8703.23 or &quot;road tractor&quot;" autocomplete="off" />
+        <button type="button" id="lookup-search-button" class="lookup-search-button">Search</button>
+      </div>
+      <div id="lookup-results" class="lookup-results"></div>
+      <div id="lookup-detail" class="lookup-detail"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>&copy; 2026 Customs &amp; Excise Tariff Book</span>
+    <span>All rights reserved</span>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

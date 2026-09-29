@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Duty Assessment Calculator — Customs &amp; Excise Tariff Book</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --forest:#16362A;
+    --forest-light:#22493A;
+    --paper:#EDEEE7;
+    --card:#F7F6F1;
+    --ink:#1C1B17;
+    --ink-soft:#4F4A3C;
+    --amber:#C98A2B;
+    --red:#9B3A2E;
+    --sage:#5C7A62;
+    --line:rgba(28,27,23,0.14);
+    --brass:#C98A2B;
+    --brass-soft:#F3E6C8;
+    --ledger:#2F6F4E;
+    --danger:#9B3A2E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'SF Pro Display', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  body.dark-theme {
+    --forest:#c8f1d5;
+    --forest-light:#dff8e7;
+    --paper:#212222;
+    --card:#2a2b2b;
+    --ink:#f8fafc;
+    --ink-soft:#e2e8f0;
+    --amber:#fbbf24;
+    --red:#fda4af;
+    --sage:#9ae6b4;
+    --line:rgba(255,255,255,0.14);
+    --brass:#fbbf24;
+    --brass-soft:#3b2f1d;
+    --ledger:#9ae6b4;
+    --danger:#fda4af;
+    background:#212222;
+    color:#f8fafc;
+  }
+
+  body.dark-theme header.top{
+    background:#171818;
+    color:#f8fafc;
+  }
+
+  body.dark-theme .card,
+  body.dark-theme .slip,
+  body.dark-theme .duty-line,
+  body.dark-theme .card-body,
+  body.dark-theme .slip-body,
+  body.dark-theme .slip-total,
+  body.dark-theme .slip-foot,
+  body.dark-theme .empty-note,
+  body.dark-theme .slip-head {
+    background:#222323 !important;
+    color:#f8fafc;
+    border-color:rgba(255,255,255,0.12);
+  }
+
+  body.dark-theme .slip-head .t1,
+  body.dark-theme .slip-head .t2 {
+    color:#f8fafc !important;
+  }
+
+  body.dark-theme .slip-body,
+  body.dark-theme .slip-total,
+  body.dark-theme .slip-foot,
+  body.dark-theme .slip-row,
+  body.dark-theme .slip-row .label,
+  body.dark-theme .slip-row .amt {
+    background:#222323 !important;
+    color:#f8fafc !important;
+    border-color:rgba(255,255,255,0.12);
+  }
+
+  body.dark-theme input[type=text],
+  body.dark-theme input[type=number],
+  body.dark-theme select,
+  body.dark-theme button.reset {
+    background:#333434;
+    color:#f8fafc;
+    border-color:rgba(255,255,255,0.12);
+  }
+
+  body.dark-theme .field label,
+  body.dark-theme .toggle,
+  body.dark-theme .slip-row .label,
+  body.dark-theme .slip-foot,
+  body.dark-theme .field .hint {
+    color:#e2e8f0;
+  }
+  header.top{
+    background:var(--forest);
+    color:var(--paper);
+    padding:14px 20px 16px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.top::after{
+    content:"";
+    position:absolute;
+    right:-40px; top:-40px;
+    width:180px; height:180px;
+    border:1px solid rgba(239,232,216,0.12);
+    border-radius:50%;
+  }
+  header.top .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--brass);
+    margin:0 0 6px;
+  }
+  header.top h1{
+    font-family:'SF Pro Display', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight:600;
+    font-size:clamp(24px,4vw,34px);
+    margin:0 0 6px;
+    max-width:640px;
+  }
+  header.top p{
+    margin:0;
+    font-size:14px;
+    color:rgba(255,255,255,0.82);
+    max-width:520px;
+  }
+  a.back{
+    color:var(--amber);
+    font-size:13px;
+    text-decoration:none;
+    border-bottom:1px solid rgba(201,138,43,0.4);
+  }
+  main{
+    max-width:1100px;
+    margin:0 auto;
+    padding:20px 16px 48px;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:22px;
+  }
+  @media(min-width:920px){
+    main{grid-template-columns: 1.05fr 1fr; align-items:start;}
+  }
+  @media(max-width:920px){
+    .slip{position:static; top:auto;}
+  }
+  @media(max-width:640px){
+    header.top{padding:12px 14px 14px;}
+    header.top h1{font-size:clamp(20px,5vw,26px);}
+    .card-body{padding:14px 12px 16px;}
+    .row, .row3{grid-template-columns:1fr; gap:8px;}
+    .duty-line{padding:8px 10px;}
+    .slip-head{padding:12px 14px; flex-direction:column; gap:6px;}
+    .slip-body{padding:14px 14px 6px;}
+    .slip-total{padding:12px 14px;}
+    .slip-foot{padding:10px 14px 14px; flex-direction:column; gap:4px;}
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:2px;
+  }
+  .card h2{
+    font-family:'Zilla Slab', serif;
+    font-size:17px;
+    margin:0;
+    padding:16px 20px;
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:center; gap:8px;
+  }
+  .card h2 .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--brass);
+    border:1px solid var(--brass);
+    border-radius:50%;
+    width:20px;height:20px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .card-body{padding:18px 20px 22px;}
+  .field{margin-bottom:10px;}
+  .field label{
+    display:block;
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin-bottom:4px;
+  }
+  .field .hint{
+    font-size:11.5px;
+    color:#8993A3;
+    font-weight:400;
+    margin-left:6px;
+  }
+  input[type=text], input[type=number], select{
+    width:100%;
+    padding:7px 8px;
+    border:1px solid var(--line);
+    border-radius:2px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    background:#FBFBFC;
+    color:var(--ink);
+  }
+  input:focus, select:focus{
+    outline:2px solid var(--brass);
+    outline-offset:1px;
+    background:#fff;
+  }
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+  @media(max-width:480px){.row3{grid-template-columns:1fr;}}
+
+  .items-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+  .items-head strong{font-size:13px;}
+  .items-list{display:grid;gap:10px;margin-bottom:12px;}
+  .item-row{border:1px solid var(--line);border-radius:2px;padding:10px;}
+  .item-row.collapsed{padding-bottom:10px;}
+  .item-row-head{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:600;}
+  .item-toggle{flex:1;min-width:0;text-align:left;border:0;background:transparent;color:var(--ink);padding:4px 0;font:600 12px 'IBM Plex Sans',sans-serif;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .item-toggle::before{content:'▸';display:inline-block;width:18px;color:var(--ledger);}
+  .item-row:not(.collapsed) .item-toggle::before{content:'▾';}
+  .item-content{padding-top:8px;}
+  .item-row.collapsed .item-content{display:none;}
+  .item-fields{display:grid;grid-template-columns:1.1fr 1.6fr 1fr 1fr 1fr;gap:8px;}
+  .item-fields .field{margin:0;min-width:0;}
+  .item-fields .field label{font-size:10.5px;}
+  .item-fields.secondary{grid-template-columns:1fr 1fr 1fr;margin-top:8px;}
+  .item-tax-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+  .item-tax{border:1px solid var(--line);border-radius:2px;padding:8px;min-width:0;}
+  .item-tax-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;font-size:12px;font-weight:600;}
+  .item-tax-head label{display:flex;align-items:center;gap:6px;cursor:pointer;}
+  .item-tax-head input{margin:0;}
+  .item-tax-inputs{display:grid;grid-template-columns:1fr 1.5fr;gap:8px;}
+  .item-tax-inputs .field{margin:0;min-width:0;}
+  .assessment-item{border:1px solid var(--line);border-radius:2px;padding:12px;margin:0 0 12px;background:var(--card);}
+  .assessment-item-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding-bottom:8px;margin-bottom:4px;border-bottom:1px solid var(--line);}
+  .assessment-item-head strong{font-family:'Zilla Slab',serif;font-size:14px;}
+  button.edit-item{border:1px solid #8A8A86;border-radius:2px;background:transparent;color:var(--ink-soft);padding:5px 8px;font:500 10px 'IBM Plex Mono',monospace;cursor:pointer;}
+  button.edit-item:hover{background:var(--brass-soft);}
+  .item-row.is-editing{outline:2px solid var(--brass);outline-offset:2px;}
+  button.add-item,button.remove-item{border:1px solid var(--line);border-radius:2px;background:transparent;color:var(--ink-soft);padding:7px 9px;font:500 11px 'IBM Plex Mono',monospace;cursor:pointer;}
+  button.add-item{border-color:var(--ledger);color:var(--ledger);}
+  button.add-item:hover,button.remove-item:hover{background:var(--brass-soft);}
+  @media(max-width:640px){.item-fields{grid-template-columns:1fr 1fr;}}
+
+  .duty-line{
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:10px 12px;
+    margin-bottom:8px;
+  }
+  .duty-line-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:6px;
+  }
+  .duty-line-head strong{font-size:13px;}
+  .toggle{
+    display:flex; align-items:center; gap:6px;
+    font-size:12px; color:var(--ink-soft);
+  }
+  .toggle input{width:auto;}
+
+  button.calc{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    width:auto;
+    min-height:36px;
+    background:transparent;
+    color:var(--ink-soft);
+    border:1px solid #8A8A86;
+    padding:7px 12px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    font-weight:500;
+    cursor:pointer;
+    margin-top:6px;
+    transition:background 0.15s ease, border-color 0.15s ease;
+  }
+  button.calc:hover{background:var(--brass-soft);border-color:#666660;}
+  button.calc:focus-visible{outline:2px solid var(--forest);outline-offset:2px;}
+  button.calc .calc-arrow{font:500 16px 'IBM Plex Sans',sans-serif;line-height:1;}
+  button.reset{
+    width:100%;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    padding:10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    border-radius:2px;
+    cursor:pointer;
+    margin-top:8px;
+  }
+
+  /* Assessment slip */
+  .slip{
+    position:sticky;
+    top:20px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:0;
+    overflow:hidden;
+  }
+  .slip-head{
+    background:var(--forest);
+    color:var(--paper);
+    padding:16px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+  }
+  .slip-head .t1{
+    font-family:'Zilla Slab', serif;
+    font-size:16px;
+    margin:0;
+  }
+  .slip-head .t2{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:#B9BFCB;
+    margin-top:4px;
+  }
+  .slip-body{padding:18px 20px 6px; position:relative;}
+  .slip-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-size:13.5px;
+    padding:7px 0;
+    border-bottom:1px dashed var(--line);
+    gap:10px;
+  }
+  .slip-row .label{color:var(--ink-soft);}
+  .slip-row .label .basis{
+    display:block;
+    font-size:10.5px;
+    color:#9AA3B1;
+    font-family:'IBM Plex Mono', monospace;
+    margin-top:2px;
+  }
+  .slip-row .amt{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .slip-row.cv{font-weight:600;}
+  .slip-total{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:16px 20px;
+    background:var(--brass-soft);
+    border-top:1px solid var(--line);
+  }
+  .slip-total .label{
+    font-family:'Zilla Slab', serif;
+    font-size:15px;
+    font-weight:600;
+  }
+  .slip-total .amt{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:20px;
+    font-weight:700;
+    color:var(--ledger);
+  }
+  .slip-foot{
+    padding:10px 20px 18px;
+    font-size:11.5px;
+    color:#8993A3;
+    display:flex;
+    justify-content:space-between;
+  }
+  .stamp{
+    position:absolute;
+    right:18px;
+    top:8px;
+    width:88px;height:88px;
+    border:2.5px solid var(--brass);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color:var(--brass);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    line-height:1.3;
+    transform:rotate(-14deg) scale(0.6);
+    opacity:0;
+    pointer-events:none;
+    transition:transform 0.45s cubic-bezier(.2,1.4,.4,1), opacity 0.3s ease;
+  }
+  .stamp.show{
+    opacity:0.9;
+    transform:rotate(-14deg) scale(1);
+  }
+  .empty-note{
+    padding:30px 20px 40px;
+    color:#8993A3;
+    font-size:13px;
+    text-align:center;
+  }
+  .print-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    padding:6px 10px;
+    border-radius:2px;
+    cursor:pointer;
+  }
+  @media print{
+    header.top, .card:not(.slip), .print-btn{display:none;}
+    body{background:#fff;}
+    .slip{border:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>Duty Assessment Calculator</h1>
+  <p style="margin-top:12px;"><a class="back" href="index.html">&larr; Back to tariff book</a></p>
+</header>
+
+<main>
+  <section class="card">
+    <h2><span class="num">1</span> Assessment worksheet</h2>
+    <div class="card-body">
+
+      <div class="items-head">
+        <strong>Items</strong>
+        <button class="add-item" type="button" onclick="addItemRow()">+ Add item</button>
+      </div>
+      <datalist id="hsCodeOptions"></datalist>
+      <div id="itemsList" class="items-list" aria-live="polite"></div>
+
+      <div class="duty-line">
+        <div class="duty-line-head">
+          <strong>Advance Income Tax (AIT)</strong>
+          <span class="toggle"><input type="checkbox" id="aitOn"> apply</span>
+        </div>
+        <div class="row">
+          <div class="field" style="margin-bottom:0;">
+            <label>Rate (%)</label>
+            <input type="number" id="aitRate" placeholder="0" step="0.01" min="0">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>Calculated on</label>
+            <select id="aitBasis">
+              <option value="cv" selected>Customs Value</option>
+              <option value="cv_duty">Customs Value + Duty</option>
+              <option value="cv_duty_excise">Customs Value + Duty + Excise</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="duty-line">
+        <div class="duty-line-head">
+          <strong>Other / surcharge</strong>
+          <span class="toggle"><input type="checkbox" id="otherOn"> apply</span>
+        </div>
+        <div class="row">
+          <div class="field" style="margin-bottom:0;">
+            <label>Label</label>
+            <input type="text" id="otherLabel" placeholder="e.g. Anti-dumping duty">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>Rate (%)</label>
+            <input type="number" id="otherRate" placeholder="0" step="0.01" min="0">
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0; margin-top:10px;">
+          <label>Calculated on</label>
+          <select id="otherBasis">
+            <option value="cv">Customs Value</option>
+            <option value="cv_duty">Customs Value + Duty</option>
+            <option value="cv_duty_excise" selected>Customs Value + Duty + Excise</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="calc" onclick="calculate()"><span>Calculate assessment</span><span class="calc-arrow" aria-hidden="true">→</span></button>
+      <button class="reset" onclick="resetForm()">Clear worksheet</button>
+    </div>
+  </section>
+
+  <section class="card slip">
+    <div class="slip-head">
+      <div>
+        <p class="t1">Duty Assessment</p>
+        <p class="t2" id="slipRef">Ref: —</p>
+      </div>
+      <button class="print-btn" onclick="window.print()">Print</button>
+    </div>
+    <div id="slipBody">
+      <div class="empty-note">Fill in the worksheet and calculate to generate the assessment breakdown.</div>
+    </div>
+  </section>
+</main>
+
+<script>
+let dutyCalculatorSchedules = null;
+let dutyCalculatorCurrency = 'ZAR';
+let dutyCalculatorFxRate = '';
+let dutyCalculatorTariffRecords = [];
+
+function syncDarkTheme(){
+  let isDark = false;
+
+  try {
+    const storedTheme = localStorage.getItem('tariff-book-theme');
+    const parentBody = window.parent && window.parent !== window ? window.parent.document.body : null;
+    const parentTheme = parentBody ? parentBody.getAttribute('data-theme') : null;
+    const parentDark = !!(parentBody && (parentBody.classList.contains('dark-theme') || parentTheme === 'dark'));
+    isDark = storedTheme === 'dark' || parentDark;
+  } catch (error) {
+    console.warn('Unable to sync duty calculator theme', error);
+  }
+
+  document.body.classList.toggle('dark-theme', isDark);
+  document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+}
+
+window.addEventListener('storage', (event) => {
+  if (event.key === 'tariff-book-theme') {
+    syncDarkTheme();
+  }
+});
+
+window.addEventListener('message', (event) => {
+  if (event.data?.type === 'tariff-theme-change') {
+    document.body.classList.toggle('dark-theme', !!event.data.isDark);
+    document.body.setAttribute('data-theme', event.data.isDark ? 'dark' : 'light');
+  }
+});
+
+if (window.parent && window.parent !== window) {
+  try {
+    const parentBody = window.parent.document.body;
+    const observer = new MutationObserver(() => syncDarkTheme());
+    observer.observe(parentBody, { attributes: true, attributeFilter: ['class', 'data-theme'] });
+    window.addEventListener('beforeunload', () => observer.disconnect());
+  } catch (error) {
+    console.warn('Unable to observe parent theme changes', error);
+  }
+}
+
+syncDarkTheme();
+
+function fmt(n){
+  return new Intl.NumberFormat('en-MW', {minimumFractionDigits:2, maximumFractionDigits:2}).format(n);
+}
+
+function parseTariffRate(value){
+  if (value === null || value === undefined || value === '') return null;
+  if (typeof value === 'number') return value;
+  const text = String(value).trim();
+  if (!text) return null;
+  if (/free/i.test(text) || /exempt/i.test(text)) return 0;
+  const match = text.match(/(-?\d+(?:\.\d+)?)/);
+  return match ? parseFloat(match[1]) : null;
+}
+
+function normalizeCode(value){
+  return String(value || '').replace(/[^0-9A-Za-z]/g, '').toUpperCase();
+}
+
+function normalizeTariffData(rawData){
+  if (!rawData) return null;
+
+  const sourceSchedules = rawData.schedules && typeof rawData.schedules === 'object' ? rawData.schedules : rawData;
+  const normalized = {};
+
+  Object.entries(sourceSchedules).forEach(([key, schedule]) => {
+    const records = Array.isArray(schedule?.items)
+      ? schedule.items
+          .filter((item) => item?.type === 'item')
+          .map((item) => ({
+            subheading: item.hs_code || '',
+            description: item.description || '',
+            heading: item.heading_code || '',
+            headingDesc: item.chapter_title || '',
+            chapter: item.chapter || '',
+            dutyGeneral: item.rates?.general_rate || null,
+            dutyPreferential: item.rates?.column6_rate || null,
+            comesa: item.rates?.comesa_rate || null,
+            afcfta: item.rates?.afcfta_rate || null,
+            sadcOther: item.rates?.sadc_rate || null,
+            sadcSa: item.rates?.sadc_rsa_rate || null,
+            excise: item.rates?.excise_rate || null,
+            vat: item.rates?.vat_rate || null,
+            ait: item.rates?.ait_rate || null
+          }))
+      : [];
+
+    normalized[key] = {
+      ...schedule,
+      schedule: schedule?.title || schedule?.schedule || key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
+      records
+    };
+  });
+
+  return normalized;
+}
+
+function findTariffRecord(code){
+  const query = normalizeCode(code);
+  if (!query || !dutyCalculatorSchedules) return null;
+
+  const scheduleEntries = Object.values(dutyCalculatorSchedules).filter(Boolean);
+  for (const schedule of scheduleEntries) {
+    const records = Array.isArray(schedule?.records) ? schedule.records : [];
+    const match = records.find((record) => normalizeCode(record?.subheading) === query);
+    if (match) return match;
+  }
+
+  return null;
+}
+
+function populateHsCodeOptions(){
+  const records = Object.values(dutyCalculatorSchedules || {})
+    .flatMap((schedule) => schedule?.records || []);
+  const options = new Map();
+  records.forEach((record) => {
+    if (record.subheading) options.set(record.subheading, record.description || '');
+  });
+  dutyCalculatorTariffRecords = Array.from(options, ([subheading, description]) => ({subheading, description}));
+}
+
+function updateHsCodeSuggestions(value){
+  const query = normalizeCode(value);
+  const matches = query
+    ? dutyCalculatorTariffRecords.filter((record) => normalizeCode(record.subheading).startsWith(query)).slice(0, 30)
+    : [];
+  document.getElementById('hsCodeOptions').innerHTML = matches.map(({subheading, description}) =>
+    `<option value="${escapeAttribute(subheading)}" label="${escapeAttribute(description)}"></option>`
+  ).join('');
+}
+
+function addItemRow(values = {}){
+  document.querySelectorAll('.item-row').forEach((existingRow) => {
+    existingRow.classList.add('collapsed');
+    existingRow.querySelector('.item-toggle').setAttribute('aria-expanded', 'false');
+  });
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  row.innerHTML = `
+    <div class="item-row-head">
+      <button class="item-toggle" type="button" aria-expanded="true" onclick="toggleItemRow(this)"></button>
+      <button class="remove-item" type="button" aria-label="Remove item" onclick="removeItemRow(this)">Remove</button>
+    </div>
+    <div class="item-content">
+    <div class="item-fields">
+      <div class="field"><label>HS Code</label><input type="text" class="item-hs" list="hsCodeOptions" placeholder="Start typing an HS code" autocomplete="off" value="${escapeAttribute(values.hsCode || '')}"><span class="hint hs-hint">Type to see matching tariff codes</span></div>
+      <div class="field"><label>Description</label><input type="text" class="item-desc" placeholder="Item description" value="${escapeAttribute(values.description || '')}"></div>
+      <div class="field"><label>Cost</label><input type="number" class="item-cif" placeholder="0.00" step="0.01" min="0" value="${escapeAttribute(values.cif || '')}"></div>
+      <div class="field"><label>Freight</label><input type="number" class="item-freight" placeholder="0.00" step="0.01" min="0" value="${escapeAttribute(values.freight || '')}"></div>
+      <div class="field"><label>Duty rate (%)</label><input type="number" class="item-duty" placeholder="0" step="0.01" min="0" value="${escapeAttribute(values.dutyRate || '')}"></div>
+    </div>
+    <div class="item-fields secondary">
+      <div class="field"><label>Currency</label><select class="item-currency"><option value="MWK">MWK</option><option value="ZAR">ZAR</option><option value="USD">USD</option><option value="GBP">GBP</option><option value="EUR">EUR</option></select></div>
+      <div class="field"><label>Rate to MWK</label><input type="number" class="item-fx" placeholder="e.g. 106.50" step="0.0001" min="0" value="${escapeAttribute(values.fxRate ?? (dutyCalculatorCurrency === 'MWK' ? 1 : dutyCalculatorFxRate))}"></div>
+      <div class="field"><label>&nbsp;</label><span class="hint">Duty on customs value</span></div>
+    </div>
+    <div class="item-tax-fields">
+      <div class="item-tax">
+        <div class="item-tax-head"><label><input type="checkbox" class="item-excise-on"> Excise</label></div>
+        <div class="item-tax-inputs">
+          <div class="field"><label>Rate (%)</label><input type="number" class="item-excise-rate" placeholder="0" step="0.01" min="0" value="${escapeAttribute(values.exciseRate || '')}"></div>
+          <div class="field"><label>Calculated on</label><select class="item-excise-basis"><option value="cv">Customs Value</option><option value="cv_duty" selected>Customs Value + Duty</option></select></div>
+        </div>
+      </div>
+      <div class="item-tax">
+        <div class="item-tax-head"><label><input type="checkbox" class="item-vat-on" checked> VAT</label></div>
+        <div class="item-tax-inputs">
+          <div class="field"><label>Rate (%)</label><input type="number" class="item-vat-rate" value="${escapeAttribute(values.vatRate ?? '16.5')}" step="0.01" min="0"></div>
+          <div class="field"><label>Calculated on</label><select class="item-vat-basis"><option value="cv">Customs Value</option><option value="cv_duty">Customs Value + Duty</option><option value="cv_duty_excise" selected>CV + Duty + Excise</option></select></div>
+        </div>
+      </div>
+    </div></div>`;
+  document.getElementById('itemsList').appendChild(row);
+  row.querySelector('.item-currency').value = values.currency || dutyCalculatorCurrency;
+  if (row.querySelector('.item-currency').value === 'MWK') row.querySelector('.item-fx').value = '1';
+  row.querySelector('.item-hs').addEventListener('input', (event) => {
+    updateHsCodeSuggestions(event.target.value);
+    updateItemNumbers();
+    const record = findTariffRecord(event.target.value);
+    if (record) {
+      applyTariffRates(record, row);
+      updateItemNumbers();
+    }
+  });
+  row.querySelector('.item-desc').addEventListener('input', updateItemNumbers);
+  row.querySelector('.item-currency').addEventListener('change', (event) => {
+    dutyCalculatorCurrency = event.target.value;
+    document.querySelectorAll('.item-row').forEach((itemRow) => {
+      itemRow.querySelector('.item-currency').value = dutyCalculatorCurrency;
+      itemRow.querySelector('.item-fx').value = dutyCalculatorCurrency === 'MWK' ? '1' : dutyCalculatorFxRate;
+    });
+  });
+  row.querySelector('.item-fx').addEventListener('input', (event) => {
+    dutyCalculatorFxRate = event.target.value;
+    if (row.querySelector('.item-currency').value !== 'MWK') {
+      document.querySelectorAll('.item-row .item-fx').forEach((rateInput) => {
+        if (rateInput !== event.target) rateInput.value = dutyCalculatorFxRate;
+      });
+    }
+  });
+  updateItemNumbers();
+  return row;
+}
+
+function escapeAttribute(value){
+  return String(value).replace(/[&"'<>]/g, (character) => ({'&':'&amp;','"':'&quot;',"'":'&#39;','<':'&lt;','>':'&gt;'}[character]));
+}
+
+function updateItemNumbers(){
+  const rows = document.querySelectorAll('.item-row');
+  rows.forEach((row, index) => {
+    const hsCode = row.querySelector('.item-hs').value.trim();
+    const description = row.querySelector('.item-desc').value.trim();
+    const detail = [hsCode, description].filter(Boolean).join(' · ');
+    row.querySelector('.item-toggle').textContent = `Item ${index + 1}${detail ? ` · ${detail}` : ''}`;
+    row.querySelector('.remove-item').disabled = rows.length === 1;
+  });
+}
+
+function toggleItemRow(button){
+  const row = button.closest('.item-row');
+  const willExpand = row.classList.contains('collapsed');
+  if (willExpand) {
+    document.querySelectorAll('.item-row').forEach((otherRow) => {
+      otherRow.classList.add('collapsed');
+      otherRow.querySelector('.item-toggle').setAttribute('aria-expanded', 'false');
+    });
+  }
+  row.classList.toggle('collapsed', !willExpand);
+  button.setAttribute('aria-expanded', String(willExpand));
+}
+
+function removeItemRow(button){
+  if (document.querySelectorAll('.item-row').length <= 1) return;
+  button.closest('.item-row').remove();
+  updateItemNumbers();
+}
+
+function applyTariffRates(record, row, setHsCode = false){
+  if (!record) return;
+
+  if (row) {
+    if (setHsCode) row.querySelector('.item-hs').value = record.subheading || '';
+    row.querySelector('.item-desc').value = record.description || '';
+  }
+
+  const dutyRate = parseTariffRate(record.dutyPreferential ?? record.dutyGeneral);
+  if (dutyRate !== null && row) row.querySelector('.item-duty').value = dutyRate;
+
+  if (row) {
+    const exciseRate = parseTariffRate(record.excise);
+    if (exciseRate !== null) {
+      row.querySelector('.item-excise-rate').value = exciseRate;
+      row.querySelector('.item-excise-on').checked = exciseRate > 0;
+    }
+
+    const vatRate = parseTariffRate(record.vat);
+    if (vatRate !== null) {
+      row.querySelector('.item-vat-rate').value = vatRate;
+      row.querySelector('.item-vat-on').checked = vatRate > 0;
+    }
+  }
+}
+
+function loadSavedTariffSelection(){
+  try {
+    const raw = localStorage.getItem('duty-calculator-selection');
+    if (!raw) return null;
+    const selection = JSON.parse(raw);
+    if (!selection?.record) return null;
+    return selection.record;
+  } catch (error) {
+    console.warn('Unable to read tariff selection', error);
+    return null;
+  }
+}
+
+function bindTariffAutoFill(){
+  if (!document.querySelector('.item-row')) addItemRow();
+}
+
+async function initDutyCalculator(){
+  bindTariffAutoFill();
+
+  try {
+    const res = await fetch('malawi_customs_excise_tariffs_2025-2027.json');
+    const rawData = await res.json();
+    dutyCalculatorSchedules = normalizeTariffData(rawData);
+    populateHsCodeOptions();
+
+    const savedSelection = loadSavedTariffSelection();
+    if (savedSelection) {
+      applyTariffRates(savedSelection, document.querySelector('.item-row'));
+    } else {
+      const firstRow = document.querySelector('.item-row');
+      const hsInput = firstRow?.querySelector('.item-hs');
+      if (hsInput?.value) {
+        const record = findTariffRecord(hsInput.value);
+        if (record) applyTariffRates(record, firstRow);
+      }
+    }
+  } catch (error) {
+    console.warn('Unable to load tariff schedules for calculator', error);
+  }
+}
+
+initDutyCalculator();
+
+function basisLabel(b){
+  return {cv:'on Customs Value', cv_duty:'on CV + Duty', cv_duty_excise:'on CV + Duty + Excise'}[b] || '';
+}
+
+function calculate(){
+  const items = Array.from(document.querySelectorAll('.item-row')).map((row, index) => {
+    const cif = parseFloat(row.querySelector('.item-cif').value) || 0;
+    const freight = parseFloat(row.querySelector('.item-freight').value) || 0;
+    const currency = row.querySelector('.item-currency').value;
+    const fx = currency === 'MWK' ? 1 : (parseFloat(row.querySelector('.item-fx').value) || 0);
+    const transactionValue = cif + freight;
+    const cv = transactionValue * fx;
+    const dutyRate = parseFloat(row.querySelector('.item-duty').value) || 0;
+    return {
+      hsCode: row.querySelector('.item-hs').value.trim(),
+      description: row.querySelector('.item-desc').value.trim(),
+      row,
+      cif, freight, transactionValue, currency, fx, cv, dutyRate,
+      duty: cv * dutyRate / 100,
+      exciseOn: row.querySelector('.item-excise-on').checked,
+      exciseRate: parseFloat(row.querySelector('.item-excise-rate').value) || 0,
+      exciseBasis: row.querySelector('.item-excise-basis').value,
+      vatOn: row.querySelector('.item-vat-on').checked,
+      vatRate: parseFloat(row.querySelector('.item-vat-rate').value) || 0,
+      vatBasis: row.querySelector('.item-vat-basis').value,
+      index: index + 1
+    };
+  }).filter((item) => item.hsCode || item.description || item.cif || item.freight || item.dutyRate);
+  const cv = items.reduce((sum, item) => sum + item.cv, 0);
+
+  const aitOn = document.getElementById('aitOn').checked;
+  const aitRate = parseFloat(document.getElementById('aitRate').value) || 0;
+  const aitBasis = document.getElementById('aitBasis').value;
+  const otherOn = document.getElementById('otherOn').checked;
+  const otherLabel = document.getElementById('otherLabel').value || 'Other charge';
+  const otherRate = parseFloat(document.getElementById('otherRate').value) || 0;
+  const otherBasis = document.getElementById('otherBasis').value;
+  items.forEach((item) => {
+    item.excise = item.exciseOn
+      ? (item.exciseBasis === 'cv' ? item.cv : item.cv + item.duty) * item.exciseRate / 100
+      : 0;
+    const itemTaxBases = {
+      cv: item.cv,
+      cv_duty: item.cv + item.duty,
+      cv_duty_excise: item.cv + item.duty + item.excise
+    };
+    item.vat = item.vatOn ? itemTaxBases[item.vatBasis] * item.vatRate / 100 : 0;
+    item.ait = aitOn ? itemTaxBases[aitBasis] * aitRate / 100 : 0;
+    item.other = otherOn ? itemTaxBases[otherBasis] * otherRate / 100 : 0;
+    item.totalPayable = item.duty + item.excise + item.vat + item.ait + item.other;
+  });
+  const totalDeclaration = items.reduce((sum, item) => sum + item.totalPayable, 0);
+
+  const ref = items.length ? `${items.length} item${items.length === 1 ? '' : 's'}` : 'No items';
+  document.getElementById('slipRef').textContent = 'Ref: ' + ref;
+
+  let rows = '';
+  items.forEach((item) => {
+    const title = [item.hsCode || `Item ${item.index}`, item.description].filter(Boolean).join(' · ');
+    rows += `<div class="assessment-item" id="assessment-item-${item.index}">
+      <div class="assessment-item-head"><strong>${escapeHtml(title)}</strong><button class="edit-item" type="button" onclick="editItem(${item.index - 1})">Edit</button></div>
+      <div class="slip-row cv"><span class="label">Transaction value<span class="basis">${item.currency} ${fmt(item.cif)} cost + ${fmt(item.freight)} freight × ${item.fx || '—'}</span></span><span class="amt">MWK ${fmt(item.cv)}</span></div>
+      <div class="slip-row"><span class="label">Import Duty<span class="basis">${item.dutyRate}% ${basisLabel('cv')}</span></span><span class="amt">MWK ${fmt(item.duty)}</span></div>`;
+    if(item.exciseOn) rows += `<div class="slip-row"><span class="label">Excise Duty<span class="basis">${item.exciseRate}% ${basisLabel(item.exciseBasis)}</span></span><span class="amt">MWK ${fmt(item.excise)}</span></div>`;
+    if(item.vatOn) rows += `<div class="slip-row"><span class="label">VAT<span class="basis">${item.vatRate}% ${basisLabel(item.vatBasis)}</span></span><span class="amt">MWK ${fmt(item.vat)}</span></div>`;
+    if(aitOn) rows += `<div class="slip-row"><span class="label">Advance Income Tax<span class="basis">${aitRate}% ${basisLabel(aitBasis)}</span></span><span class="amt">MWK ${fmt(item.ait)}</span></div>`;
+    if(otherOn) rows += `<div class="slip-row"><span class="label">${escapeHtml(otherLabel)}<span class="basis">${otherRate}% ${basisLabel(otherBasis)}</span></span><span class="amt">MWK ${fmt(item.other)}</span></div>`;
+    rows += `<div class="slip-row"><span class="label">Item ${item.index} payable</span><span class="amt">MWK ${fmt(item.totalPayable)}</span></div></div>`;
+  });
+
+  const isDark = document.body.classList.contains('dark-theme') || document.body.getAttribute('data-theme') === 'dark';
+  const darkStyle = isDark ? 'background:#222323;color:#f8fafc;' : '';
+  const html = `
+    <div class="slip-body" style="${darkStyle}">
+      <div class="stamp show" id="stampEl">Duty<br>Assessed</div>
+      ${rows}
+    </div>
+    <div class="slip-total" style="${darkStyle}">
+      <span class="label">Total Declaration</span>
+      <span class="amt">MWK ${fmt(totalDeclaration)}</span>
+    </div>
+    <div class="slip-foot" style="${darkStyle}">
+      <span>Items declared: ${items.length}</span>
+      <span>Effective rate: ${cv>0 ? (totalDeclaration/cv*100).toFixed(2) : '0.00'}%</span>
+    </div>
+  `;
+  document.getElementById('slipBody').innerHTML = html;
+}
+
+function editItem(index){
+  const row = document.querySelectorAll('.item-row')[index];
+  if (!row) return;
+  document.querySelectorAll('.item-row.is-editing').forEach((editingRow) => editingRow.classList.remove('is-editing'));
+  toggleItemRow(row.querySelector('.item-toggle'));
+  if (row.classList.contains('collapsed')) toggleItemRow(row.querySelector('.item-toggle'));
+  row.classList.add('is-editing');
+  row.scrollIntoView({behavior:'smooth', block:'center'});
+  row.querySelector('.item-hs').focus({preventScroll:true});
+}
+
+function escapeHtml(value){
+  return String(value).replace(/[&"'<>]/g, (character) => ({'&':'&amp;','"':'&quot;',"'":'&#39;','<':'&lt;','>':'&gt;'}[character]));
+}
+
+function resetForm(){
+  document.getElementById('itemsList').innerHTML = '';
+  dutyCalculatorCurrency = 'ZAR';
+  dutyCalculatorFxRate = '';
+  addItemRow();
+  document.querySelectorAll('.duty-line input[type=text], .duty-line input[type=number]').forEach(i => i.value = '');
+  document.getElementById('aitOn').checked = false;
+  document.getElementById('otherOn').checked = false;
+  document.getElementById('slipRef').textContent = 'Ref: —';
+  document.getElementById('slipBody').innerHTML = '<div class="empty-note">Fill in the worksheet and calculate to generate the assessment breakdown.</div>';
+}
+</script>
+
+</body>
+</html>

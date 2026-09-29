@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — Customs & Excise Tariff Book</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero hero-single-title">
+    <div class="hero-inner">
+      <div>
+        <h1 class="display">CUSTOMS &amp; EXCISE TARIFF BOOK</h1>
+        <p class="hero-subtitle">Secure access for approved users</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="auth-layout">
+    <section class="card auth-card">
+      <h2 class="section-title display">Sign in</h2>
+      <form id="login-form" class="auth-form">
+        <input type="email" name="email" placeholder="Email address" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <button type="submit">Sign in</button>
+      </form>
+
+      <div class="forgot-password-wrapper">
+        <button type="button" id="forgot-password-toggle" class="link-button">Forgot password?</button>
+        <div id="forgot-password-section" class="forgot-password-section" hidden>
+          <input type="email" id="reset-email" placeholder="Enter your email address" />
+          <button type="button" id="forgot-password-submit">Request reset</button>
+        </div>
+      </div>
+
+      <div class="register-wrapper">
+        <p class="register-prompt">Don't have an account?</p>
+        <a href="register.html" id="show-register-link" class="auth-switch-link register-link" target="_blank" rel="noopener noreferrer">Register here</a>
+      </div>
+    </section>
+
+  </main>
+
+  <p id="auth-message" class="auth-message"></p>
+
+  <footer class="site-footer">
+    <a href="#" class="footer-link" data-action="contacts">Contacts</a>
+    <span class="footer-copy">&copy; 2026 Customs &amp; Excise Tariff Book · All rights reserved</span>
+    <a href="#" class="footer-link" data-action="about">About</a>
+  </footer>
+
+  <div id="page-modal" class="page-modal" hidden>
+    <div class="page-modal-content" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
+      <button type="button" data-action="close-modal" class="modal-close">×</button>
+      <h2 id="contact-modal-title" class="section-title display"></h2>
+      <div class="contact-modal-body"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
+</body>
+</html>
